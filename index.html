@@ -158,90 +158,112 @@
   .rb-title{font-size:15px;font-weight:700;letter-spacing:.32em;color:var(--amber)}
   .rb-sub{font-size:10px;letter-spacing:.24em;color:var(--dim)}
 
-  /* ---------- 3D SHOWROOM — no background: canvas IS the scene ---------- */
-  #showroom{position:fixed;inset:0;z-index:9;display:none;flex-direction:column;justify-content:space-between;cursor:grab}
+  /* ================================================================
+     3D SHOWROOM — floating-panel layout. No background: the WebGL
+     canvas IS the scene; all UI floats over it. Works in portrait,
+     landscape, desktop — the 3D area gets the whole screen.
+     ================================================================ */
+  #showroom{position:fixed;inset:0;z-index:9;display:none;flex-direction:column;cursor:grab}
   #showroom.on{display:flex}
   #showroom:active{cursor:grabbing}
-  #sr-top{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;
-    padding:calc(10px + env(safe-area-inset-top)) 12px 0}
-  #sr-title{font-weight:700;font-size:13px;letter-spacing:.26em;color:var(--ink);white-space:nowrap}
+
+  /* top bar: title · live setup summary · deploy · install · credit */
+  #sr-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    padding:calc(10px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 4px calc(14px + env(safe-area-inset-left))}
+  #sr-title{font-weight:700;font-size:15px;letter-spacing:.24em;color:var(--ink);white-space:nowrap}
   #sr-title i{color:var(--amber);font-style:normal}
-  .sr-btn{cursor:pointer;border:1px solid #2a3140;background:rgba(10,13,18,.65);color:var(--dim);
-    font:600 10px 'Chakra Petch',sans-serif;letter-spacing:.2em;padding:9px 15px;text-transform:uppercase;
-    transition:color .12s,border-color .12s;border-radius:10px}
-  .sr-btn:hover{color:var(--ink);border-color:#46536a}
-  #sr-deploy{border:1px solid var(--amber);color:var(--amber);font-weight:700;letter-spacing:.3em;padding:11px 26px;font-size:12px;
-    border-radius:999px;animation:deployPulse 1.8s ease-in-out infinite}
+  #sr-summary{flex:1;min-width:150px;text-align:center;font-size:9px;letter-spacing:.2em;color:var(--dim);
+    text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #sr-summary b{color:var(--amber)}
+  #sr-deploy{cursor:pointer;border:1px solid var(--amber);color:var(--amber);font-weight:700;letter-spacing:.3em;
+    padding:10px 24px;font-size:12px;border-radius:999px;background:rgba(10,13,18,.6);
+    font-family:'Chakra Petch',sans-serif;text-transform:uppercase;animation:deployPulse 1.8s ease-in-out infinite;
+    transition:background .15s,color .15s;white-space:nowrap}
   #sr-deploy:hover{background:var(--amber);color:#06080b}
   @keyframes deployPulse{50%{box-shadow:0 0 0 4px rgba(78,168,255,.22)}}
-  #sr-tabs{display:flex;gap:6px}
-  .sr-tab{cursor:pointer;border:1px solid #2a3140;background:rgba(10,13,18,.65);color:var(--dim);
-    font:600 10px 'Chakra Petch',sans-serif;letter-spacing:.18em;padding:9px 13px;text-transform:uppercase;border-radius:10px}
-  .sr-tab.active{color:var(--amber);border-color:var(--amber)}
-  /* the permanent signature chip — most visible spot in the game */
-  #sr-made{font-size:8px;font-weight:600;letter-spacing:.28em;color:var(--dim);text-transform:uppercase;
-    border:1px solid #2a3140;border-radius:999px;padding:7px 13px;background:rgba(10,13,18,.55);white-space:nowrap}
-  #sr-made b{color:var(--amber)}
-  #sr-install{display:none;border-color:var(--green);color:var(--green)}
+  #sr-install{display:none;cursor:pointer;border:1px solid var(--green);color:var(--green);letter-spacing:.2em;
+    padding:9px 14px;font-size:10px;font-weight:600;border-radius:12px;background:rgba(10,13,18,.6);white-space:nowrap}
   #sr-install.show{display:inline-block}
+  #sr-made{font-size:8px;font-weight:600;letter-spacing:.26em;color:var(--dim);text-transform:uppercase;
+    border:1px solid #2a3140;border-radius:999px;padding:7px 12px;background:rgba(10,13,18,.55);white-space:nowrap}
+  #sr-made b{color:var(--amber)}
 
-  /* side config panel — strips down on small/landscape screens */
-  #sr-side{position:absolute;left:calc(12px + env(safe-area-inset-left));top:calc(64px + env(safe-area-inset-top));width:200px;
-    background:rgba(8,10,14,.72);border:1px solid #232a36;padding:12px 12px 10px;border-radius:16px;
-    -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-  .sr-side-h{font-size:8px;letter-spacing:.3em;color:var(--dim);font-weight:600;margin:0 0 7px;text-transform:uppercase}
-  .sr-side-h:not(:first-child){margin-top:12px}
-  .sr-chips{display:flex;flex-wrap:wrap;gap:5px}
+  /* config bar: clearly labelled TIME + DIFFICULTY chips (scrolls sideways if tight) */
+  #sr-config{display:flex;align-items:center;gap:14px;padding:3px calc(14px + env(safe-area-inset-right)) 6px calc(14px + env(safe-area-inset-left));
+    overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  #sr-config::-webkit-scrollbar{display:none}
+  .cfg{display:flex;align-items:center;gap:7px;flex:0 0 auto}
+  .cfg-l{font-size:8px;letter-spacing:.26em;color:var(--dim);font-weight:700;text-transform:uppercase}
+  .sr-chips{display:flex;gap:5px;flex:0 0 auto}
   .schip{cursor:pointer;border:1px solid #2a3140;background:rgba(255,255,255,.03);color:var(--dim);
-    font:600 9px 'Chakra Petch',sans-serif;letter-spacing:.1em;padding:5px 8px;text-transform:uppercase;transition:color .12s,border-color .12s;border-radius:9px}
+    font:600 9px 'Chakra Petch',sans-serif;letter-spacing:.1em;padding:5px 9px;text-transform:uppercase;
+    transition:color .12s,border-color .12s;border-radius:9px;white-space:nowrap}
   .schip:hover{color:var(--ink);border-color:#46536a}
-  .schip.on{color:var(--amber);border-color:var(--amber)}
-  #sr-best{margin-top:11px;font-size:9px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase}
+  .schip.on{color:var(--amber);border-color:var(--amber);background:rgba(78,168,255,.12)}
+  #sr-best{flex:0 0 auto;font-size:8px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;white-space:nowrap}
   #sr-best b{color:var(--ink)}
-  @media (max-width:820px), (max-height:560px){
-    #sr-side{position:static;width:auto;margin:6px 12px 0;padding:7px 12px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
-    .sr-side-h{margin:0 2px 0 0}
-    #sr-best{margin:0 0 0 4px}
-  }
 
-  #sr-mid{flex:1;position:relative;min-height:80px}
-  #sr-draghint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:.26em;
-    color:var(--dim);opacity:.65;pointer-events:none;text-transform:uppercase;white-space:nowrap}
-  #sr-credit{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
-    font-size:10px;letter-spacing:.5em;color:var(--dim);text-transform:uppercase;pointer-events:none;white-space:nowrap}
-  #sr-credit b{color:var(--amber);font-weight:700}
-  #sr-cards{display:flex;align-items:flex-end;justify-content:center;gap:10px;padding:0 12px calc(14px + env(safe-area-inset-bottom))}
-  .sr-nav{cursor:pointer;width:58px;height:92px;border-radius:16px;border:1px solid #2a3140;background:rgba(10,13,18,.55);
-    color:var(--amber);font:700 30px 'Chakra Petch',sans-serif;line-height:1;display:flex;align-items:center;justify-content:center}
-  .sr-nav:active{background:rgba(78,168,255,.2)}
-  #sr-info{flex:1;max-width:430px;background:rgba(8,10,14,.72);border:1px solid #232a36;border-bottom:2px solid var(--amber);
-    padding:13px 17px;border-radius:16px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-  #sr-name{font-size:21px;font-weight:700;color:var(--ink);letter-spacing:.05em}
-  #sr-sub{font-size:9px;letter-spacing:.3em;color:var(--amber);margin:3px 0 9px;font-weight:600;text-transform:uppercase}
-  .sbar{display:flex;align-items:center;gap:9px;margin:5px 0}
+  /* the 3D stage: everything floats over the canvas */
+  #sr-main{flex:1;position:relative;min-height:140px;overflow:hidden}
+  #sr-tabs{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;gap:4px;
+    background:rgba(8,10,14,.65);border:1px solid #232a36;border-radius:13px;padding:4px;
+    -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  .sr-tab{cursor:pointer;border:1px solid transparent;background:transparent;color:var(--dim);
+    font:600 10px 'Chakra Petch',sans-serif;letter-spacing:.16em;padding:7px 14px;text-transform:uppercase;
+    border-radius:9px;transition:color .12s,background .12s}
+  .sr-tab.active{color:var(--amber);background:rgba(78,168,255,.14);border-color:rgba(78,168,255,.4)}
+  #sr-tools{position:absolute;top:10px;right:calc(10px + env(safe-area-inset-right));display:flex;gap:6px}
+  .tool-btn{cursor:pointer;width:36px;height:36px;border-radius:11px;border:1px solid #2a3140;
+    background:rgba(10,13,18,.6);color:var(--dim);font:600 9px 'Chakra Petch',sans-serif;letter-spacing:.06em;
+    text-transform:uppercase;transition:color .12s,border-color .12s}
+  .tool-btn:hover{color:var(--ink);border-color:#46536a}
+  .sr-nav{cursor:pointer;position:absolute;top:44%;transform:translateY(-50%);width:54px;height:88px;
+    border-radius:16px;border:1px solid #2a3140;background:rgba(10,13,18,.55);color:var(--amber);
+    font:700 28px 'Chakra Petch',sans-serif;line-height:1;display:flex;align-items:center;justify-content:center;
+    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .sr-nav:active{background:rgba(78,168,255,.25)}
+  #sr-prev{left:calc(12px + env(safe-area-inset-left))}
+  #sr-next{right:calc(12px + env(safe-area-inset-right))}
+
+  /* item card — floats at the bottom of the 3D stage */
+  #sr-info{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+    width:min(480px,calc(100% - 28px));background:rgba(8,10,14,.74);border:1px solid #232a36;
+    border-bottom:2px solid var(--amber);padding:12px 16px;border-radius:18px;
+    -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+  #sr-name{font-size:20px;font-weight:700;color:var(--ink);letter-spacing:.05em}
+  #sr-sub{font-size:9px;letter-spacing:.28em;color:var(--amber);margin:2px 0 8px;font-weight:600;text-transform:uppercase}
+  .sbar{display:flex;align-items:center;gap:9px;margin:4px 0}
   .sb-l{width:36px;font-size:8px;letter-spacing:.18em;color:var(--dim);font-weight:600}
   .sb-t{flex:1;height:3px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
   .sb-f{height:100%;background:var(--amber)}
   .sb-v{width:52px;text-align:right;font-size:10px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
-  #sr-badges{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 2px}
+  #sr-badges{display:flex;flex-wrap:wrap;gap:5px;margin:7px 0 2px}
   .sbadge{font-size:8px;font-weight:600;letter-spacing:.14em;color:var(--amber-hi);border:1px solid rgba(78,168,255,.45);
     padding:3px 7px;text-transform:uppercase;border-radius:7px}
-  #sr-desc{font-size:11px;color:var(--dim);line-height:1.55;margin-top:8px;min-height:32px}
+  #sr-desc{font-size:11px;color:var(--dim);line-height:1.5;margin-top:7px;min-height:30px}
   #sr-desc b{color:var(--ink)}
-  #sr-equip{cursor:pointer;margin-top:11px;width:100%;padding:11px 0;border:1px solid var(--amber);background:transparent;
-    color:var(--amber);font:700 11px 'Chakra Petch',sans-serif;letter-spacing:.3em;text-transform:uppercase;
+  #sr-loadout{font-size:9px;letter-spacing:.14em;color:var(--dim);margin-top:8px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #sr-loadout b{color:var(--ink)}
+  #sr-action{cursor:pointer;margin-top:9px;width:100%;padding:10px 0;border:1px solid var(--amber);background:transparent;
+    color:var(--amber);font:700 11px 'Chakra Petch',sans-serif;letter-spacing:.26em;text-transform:uppercase;
     transition:background .15s,color .15s;border-radius:12px}
-  #sr-equip:hover{background:var(--amber);color:#06080b}
-  #sr-equip.equipped{background:rgba(78,168,255,.16);color:var(--amber-hi)}
+  #sr-action:hover{background:var(--amber);color:#06080b}
+  #sr-action.equipped{background:rgba(78,168,255,.16);color:var(--amber-hi)}
+  #sr-action.status{pointer-events:none;border-color:rgba(98,224,127,.45);color:#9ff0b0;background:rgba(98,224,127,.1)}
+
+  #sr-draghint{position:absolute;top:56px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:.24em;
+    color:var(--dim);opacity:.7;pointer-events:none;text-transform:uppercase;white-space:nowrap;transition:opacity .8s}
+  #sr-draghint.fade{opacity:0}
 
   /* help / leaderboard slide-over */
-  #sr-help{position:absolute;right:calc(12px + env(safe-area-inset-right));top:calc(64px + env(safe-area-inset-top));width:300px;max-height:calc(100% - 200px);
-    overflow-y:auto;background:rgba(8,10,14,.9);border:1px solid #232a36;border-top:2px solid var(--amber);padding:14px 16px;border-radius:16px;
-    -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+  #sr-help{position:absolute;top:54px;right:calc(10px + env(safe-area-inset-right));width:300px;max-height:calc(100% - 70px);
+    overflow-y:auto;background:rgba(8,10,14,.92);border:1px solid #232a36;border-top:2px solid var(--amber);padding:14px 16px;border-radius:16px;
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
   #sr-help.off{display:none}
   #sr-help h3{font-size:10px;letter-spacing:.3em;color:var(--amber);margin-bottom:10px;font-weight:600;text-transform:uppercase}
-  #sr-help .dedic{font-size:9px;letter-spacing:.3em;color:var(--dim);margin-bottom:12px;text-transform:uppercase}
+  #sr-help .dedic{font-size:9px;letter-spacing:.26em;color:var(--dim);margin-bottom:6px;text-transform:uppercase}
   #sr-help .dedic b{color:var(--ink)}
+  #sr-help .setup{font-size:9px;letter-spacing:.18em;color:var(--amber-hi);margin-bottom:12px;text-transform:uppercase}
   #sr-help .keys{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center}
   #sr-help .board{margin-top:14px;border-top:1px solid #232a36}
   #sr-help .board .row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #232a36;font-size:11px}
@@ -364,39 +386,34 @@
     #hp-wrap{width:180px}
     .btn{padding:12px 26px;letter-spacing:.3em}
     .panel{padding:20px 18px 18px;border-radius:20px}
-    #sr-info{padding:10px 12px}
-    #sr-name{font-size:17px}
-    .sr-nav{width:46px;height:80px;font-size:24px}
-    #sr-desc{font-size:10px}
-    #sr-deploy{padding:9px 18px;font-size:11px}
-    #sr-title{font-size:11px}
     #sr-help{width:250px}
   }
-  /* landscape / short screens: compact showroom rows */
-  @media (max-height:520px){
-    .rule{margin-bottom:12px}
-    .kicker{margin-bottom:6px}
-    .sub{margin:8px 0 10px}
-    h1{font-size:clamp(26px,8vh,40px)}
-    .rating{font-size:50px;margin:2px 0 0}
-    .rating-name{font-size:12px}
-    .stats{margin:10px 0 14px}
-    .stats .row{padding:6px 0}
-    #hp-wrap{bottom:calc(14px + env(safe-area-inset-bottom))}
-    #sig-stage{width:min(80vw,720px)}
-    #sig-credit{bottom:-52px;font-size:11px}
-    #sig-skip{bottom:-28px}
-    #sr-top{padding-top:calc(6px + env(safe-area-inset-top))}
-    .sr-btn,.sr-tab{padding:6px 10px}
-    #sr-made{padding:5px 10px}
-    #sr-info{padding:8px 12px}
-    #sr-desc{min-height:0;font-size:10px}
-    .sbar{margin:3px 0}
-    #sr-equip{margin-top:7px;padding:7px 0}
-    .sr-nav{height:64px;width:48px;border-radius:12px}
-    #sr-cards{padding-bottom:calc(8px + env(safe-area-inset-bottom))}
-    #sr-draghint{bottom:26px;font-size:7px}
-    #sr-credit{bottom:4px;font-size:8px}
+  /* SHORT / LANDSCAPE screens — compact showroom (3D keeps most of the screen) */
+  @media (max-height:560px){
+    #sr-top{padding-top:calc(5px + env(safe-area-inset-top));gap:7px}
+    #sr-title{font-size:11px}
+    #sr-summary{font-size:8px;min-width:100px}
+    #sr-deploy{padding:7px 15px;font-size:10px}
+    #sr-made{padding:5px 9px;font-size:7px}
+    #sr-install{padding:6px 10px}
+    #sr-config{padding-bottom:4px;gap:10px}
+    .cfg-l{font-size:7px}
+    .schip{font-size:8px;padding:3px 6px}
+    #sr-best{font-size:7px}
+    #sr-tabs{top:6px;padding:3px}
+    .sr-tab{padding:5px 10px;font-size:9px}
+    #sr-tools{top:6px}
+    .tool-btn{width:30px;height:30px;font-size:8px}
+    .sr-nav{width:42px;height:64px;font-size:20px;border-radius:12px}
+    #sr-info{bottom:6px;padding:7px 12px;border-radius:14px}
+    #sr-name{font-size:15px}
+    #sr-sub{margin:1px 0 5px;font-size:8px}
+    .sbar{margin:2px 0}
+    #sr-desc{display:none}
+    #sr-loadout{margin-top:5px;font-size:8px}
+    #sr-action{margin-top:6px;padding:7px 0;font-size:10px}
+    #sr-draghint{display:none}
+    #sr-help{top:44px}
   }
   @media (max-height:430px){
     #btn-fire{width:74px;height:74px;bottom:60px}
@@ -406,6 +423,7 @@
     #btn-reload{bottom:148px}
     #btn-wpn{bottom:202px}
     #btn-od{width:56px;height:56px;right:calc(196px + env(safe-area-inset-right));bottom:76px}
+    #sr-badges{display:none}
   }
 </style>
 </head>
@@ -476,44 +494,43 @@
   <button class="tbtn" id="btn-od" aria-label="Overdrive"><span>OD</span></button>
 </div>
 
-<!-- 3D showroom — THE home screen (canvas behind it is the actual 3D) -->
+<!-- ============ 3D SHOWROOM — the home screen ============ -->
 <div id="showroom">
   <div id="sr-top">
     <div id="sr-title">EMBER<i>·</i>RANGE</div>
-    <button class="sr-btn" id="sr-deploy">DEPLOY ▸</button>
+    <div id="sr-summary"></div>
+    <button id="sr-deploy">DEPLOY ▸</button>
+    <button id="sr-install">INSTALL · OFFLINE</button>
+    <div id="sr-made">made by <b>GAURAV</b> · for <b>BIGYAN</b></div>
+  </div>
+  <div id="sr-config">
+    <div class="cfg"><span class="cfg-l">Time</span><div id="sr-modes" class="sr-chips"></div></div>
+    <div class="cfg"><span class="cfg-l">Difficulty</span><div id="sr-diffs" class="sr-chips"></div></div>
+    <div id="sr-best"></div>
+  </div>
+  <div id="sr-main">
     <div id="sr-tabs">
       <button class="sr-tab" data-tab="op">OPERATOR</button>
       <button class="sr-tab" data-tab="wpn">WEAPONS</button>
       <button class="sr-tab" data-tab="arena">ARENA</button>
     </div>
-    <button class="sr-btn" id="sr-angle">ANGLE</button>
-    <button class="sr-btn" id="sr-help-btn">?</button>
-    <button class="sr-btn" id="sr-install">INSTALL · OFFLINE</button>
-    <div id="sr-made">made by <b>GAURAV</b></div>
-  </div>
-  <div id="sr-side">
-    <div class="sr-side-h">Duration</div>
-    <div id="sr-modes" class="sr-chips"></div>
-    <div class="sr-side-h">Difficulty</div>
-    <div id="sr-diffs" class="sr-chips"></div>
-    <div id="sr-best"></div>
-  </div>
-  <div id="sr-mid">
-    <div id="sr-draghint">drag to orbit · arrows / swipe to browse · enter to deploy</div>
-    <div id="sr-credit">for <b>BIGYAN</b></div>
-  </div>
-  <div id="sr-cards">
+    <div id="sr-tools">
+      <button class="tool-btn" id="sr-angle">CAM</button>
+      <button class="tool-btn" id="sr-help-btn">?</button>
+    </div>
     <button class="sr-nav" id="sr-prev">‹</button>
+    <button class="sr-nav" id="sr-next">›</button>
     <div id="sr-info">
       <div id="sr-name"></div>
       <div id="sr-sub"></div>
       <div id="sr-stats"></div>
       <div id="sr-desc"></div>
-      <button id="sr-equip">EQUIP</button>
+      <div id="sr-loadout"></div>
+      <button id="sr-action">EQUIP</button>
     </div>
-    <button class="sr-nav" id="sr-next">›</button>
+    <div id="sr-draghint">drag to orbit · ‹ › or swipe to browse</div>
+    <div id="sr-help" class="off"></div>
   </div>
-  <div id="sr-help" class="off"></div>
 </div>
 
 <!-- portrait blocker -->
@@ -564,9 +581,8 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
 <script>
 /* ================================================================
-   OFFLINE ENGINE CACHE — after your first online visit, the 3D
-   engine is stored locally, so this single file runs with zero
-   network access (works even when opened straight from disk).
+   OFFLINE ENGINE CACHE — first online visit stores the 3D engine
+   locally; after that this single file runs with zero network.
    ================================================================ */
 (function () {
   var T_URL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
@@ -665,29 +681,31 @@ const CONFIG = {
   GAME_TIME: 60,
 };
 
+/* chip = the clear label shown in the showroom; name = record flavor */
 const MODES = [
-  { key:'neupane', name:'NEUPANE 30', sub:'30 SEC',  time:30,
+  { key:'neupane', name:'NEUPANE 30', chip:'30s', time:30,
     desc:'A lightning duel in Bigyan\'s honor — half a minute where every single shot is sacred.' },
-  { key:'blitz',    name:'BLITZ',    sub:'60 SEC',  time:60,
+  { key:'blitz',    name:'BLITZ',    chip:'60s', time:60,
     desc:'Sixty seconds of pure pressure. Threat escalates fast, ratings scale to the short clock.' },
-  { key:'standard', name:'STANDARD', sub:'90 SEC',  time:90,
+  { key:'standard', name:'STANDARD', chip:'90s', time:90,
     desc:'The classic trial — enough clock to build big streaks and bank two Overdrives.' },
-  { key:'extended', name:'EXTENDED', sub:'120 SEC', time:120,
+  { key:'extended', name:'EXTENDED', chip:'120s', time:120,
     desc:'Two full minutes. Sustained multiplier discipline beats lucky bursts here.' },
-  { key:'marathon', name:'MARATHON', sub:'180 SEC', time:180,
+  { key:'marathon', name:'MARATHON', chip:'180s', time:180,
     desc:'Three minutes of war of attrition. Bring Bastion, hoard caches, pace your ammo.' },
-  { key:'bigyan',   name:'BIGYAN 240', sub:'240 SEC', time:240,
+  { key:'bigyan',   name:'BIGYAN 240', chip:'240s', time:240,
     desc:'The full ceremony — four minutes in the hive. A long-haul endurance run named for Bigyan himself.' },
-  { key:'survival', name:'SURVIVAL', sub:'ENDLESS', time:0,
+  { key:'survival', name:'SURVIVAL', chip:'∞', time:0,
     desc:'No clock — <b>it only ends when you flatline.</b> Threat climbs every 25 seconds without cap, and you bank bonus score every 10 seconds alive. Time caches convert to points.' },
 ];
 
+/* CLEAR difficulty names */
 const DIFFS = [
-  { key:'recruit', name:'RECRUIT', sub:'EASY', dmg:0.6, speed:0.9, strikers:2, gold:0.10,
+  { key:'recruit', name:'EASY',   sub:'EASY', dmg:0.6, speed:0.9, strikers:2, gold:0.10,
     desc:'You take <b>40% less damage</b>, drones drift 10% slower, at most 2 strikers hunt you. Learn the ropes.' },
-  { key:'veteran', name:'VETERAN', sub:'STANDARD', dmg:1.0, speed:1.0, strikers:3, gold:0.12,
+  { key:'veteran', name:'NORMAL', sub:'NORMAL', dmg:1.0, speed:1.0, strikers:3, gold:0.12,
     desc:'The intended experience. Standard damage, standard pace, up to 3 strikers. Ratings mean what they say.' },
-  { key:'ember',   name:'EMBER',   sub:'HARD', dmg:1.25, speed:1.15, strikers:4, gold:0.15,
+  { key:'ember',   name:'HARD',   sub:'HARD', dmg:1.25, speed:1.15, strikers:4, gold:0.15,
     desc:'You take <b>25% more damage</b>, everything moves 15% faster, up to 4 strikers and more gold bounties. For leaderboard bragging rights.' },
 ];
 
@@ -2382,8 +2400,10 @@ if (IS_TOUCH) {
 }
 
 /* ================================================================
-   3D SHOWROOM — hologram exhibit. THE critical rule:
-   every item wrap MUST be added to srRoot, or it never renders.
+   3D SHOWROOM — "what you see is what you deploy".
+   RULE 1: every item wrap MUST be added to srRoot or it never renders.
+   RULE 2: browsing an OPERATOR or ARENA selects it instantly.
+   RULE 3: hologram decor adapts its size to the item so nothing clips.
    ================================================================ */
 const ARENA_KEYS = Object.keys(ARENAS);
 const W_BUILDERS = [buildSidearm, buildSMG, buildShotgun, buildDMR, buildRail, buildHavoc];
@@ -2397,7 +2417,7 @@ let srScene = null, srCam = null, srRoot = null, srItem = null, srGlow = null;
 const srOrbit = { theta: 0.8, phi: 1.2, r: 6.6, auto: true, idleT: 0 };
 const srIdx = { op: 0, wpn: 0, arena: 0 };
 let srTab = 'op', srSlide = { dir: 1, t: 1 }, srTime = 0, srAngleIdx = 0, srDragOn = false;
-let srErrored = false;
+let srErrored = false, srLookY = 1.4;
 const srOrbiters = [], srWthr = [], srDecor = [];
 const SR_DIO = {};
 
@@ -2433,7 +2453,7 @@ function initShowroom() {
   srGlow.scale.set(15, 15, 1);
   srGlow.position.set(0, 2.4, -5.5);
   srScene.add(srGlow);
-  /* faint floor grid rings around the exhibit */
+  /* faint floor guide rings around the exhibit */
   const gr1 = new THREE.Mesh(new THREE.TorusGeometry(2.7, 0.008, 6, 64),
     new THREE.MeshBasicMaterial({ color: 0x4ea8ff, transparent: true, opacity: 0.22 }));
   gr1.material.toneMapped = false;
@@ -2549,12 +2569,12 @@ function buildDiorama(key) {
   return g;
 }
 
-/* ---- hologram presentation: scanning ring, counter ring, beam, glow, orbiting shards ---- */
+/* ---- hologram decor, sized to the current item (cy = item center, R = ring radius) ---- */
 function srClearDecor() {
   for (const d of srDecor) { if (d.mesh.parent) d.mesh.parent.remove(d.mesh); }
   srDecor.length = 0;
 }
-function srBuildDecor(col) {
+function srBuildDecor(col, cy, R) {
   srClearDecor();
   const holoMat = (op) => {
     const m = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: op,
@@ -2562,25 +2582,26 @@ function srBuildDecor(col) {
     m.toneMapped = false;
     return m;
   };
-  const r1 = new THREE.Mesh(new THREE.TorusGeometry(1.55, 0.018, 8, 72), holoMat(0.5));
-  r1.rotation.x = Math.PI / 2; r1.position.y = 1.9;
-  srRoot.add(r1); srDecor.push({ mesh: r1, kind: 'scan' });
-  const r2 = new THREE.Mesh(new THREE.TorusGeometry(1.28, 0.012, 8, 64), holoMat(0.4));
-  r2.position.y = 1.85; r2.rotation.x = Math.PI / 2 + 0.45; r2.rotation.y = 0.7;
+  const r1 = new THREE.Mesh(new THREE.TorusGeometry(R, 0.018, 8, 72), holoMat(0.5));
+  r1.rotation.x = Math.PI / 2; r1.position.y = cy;
+  srRoot.add(r1); srDecor.push({ mesh: r1, kind: 'scan', cy: cy });
+  const r2 = new THREE.Mesh(new THREE.TorusGeometry(R * 0.82, 0.012, 8, 64), holoMat(0.4));
+  r2.position.y = cy; r2.rotation.x = Math.PI / 2 + 0.45; r2.rotation.y = 0.7;
   srRoot.add(r2); srDecor.push({ mesh: r2, kind: 'spinRev', s: 0.7 });
-  const beam = new THREE.Mesh(new THREE.CylinderGeometry(1.45, 0.5, 2.1, 28, 1, true), holoMat(0.05));
-  beam.position.y = 1.35;
+  const bh = cy + 0.55;
+  const beam = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.95, 0.5, bh, 28, 1, true), holoMat(0.05));
+  beam.position.y = bh / 2 + 0.05;
   srRoot.add(beam); srDecor.push({ mesh: beam, kind: 'beam' });
   const ug = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: col, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false }));
   ug.material.toneMapped = false;
-  ug.scale.set(4.2, 2.4, 1); ug.position.y = 0.34;
+  ug.scale.set(R * 3.4, R * 1.9, 1); ug.position.y = 0.34;
   srRoot.add(ug); srDecor.push({ mesh: ug, kind: 'glow' });
   for (let i = 0; i < 3; i++) {
     const sh = new THREE.Mesh(shardGeo, new THREE.MeshBasicMaterial({ color: col }));
     sh.material.toneMapped = false;
     sh.scale.setScalar(2.2);
     srRoot.add(sh);
-    srDecor.push({ mesh: sh, kind: 'orbit', a: i * 2.1, r: 1.85, y: 2.05, s: 0.9 + i * 0.35 });
+    srDecor.push({ mesh: sh, kind: 'orbit', a: i * 2.1, r: R * 1.18, y: cy, s: 0.9 + i * 0.35 });
   }
 }
 
@@ -2606,37 +2627,56 @@ function srBuildItem() {
   g.position.set(0, 0, 0);
   if (g.parent) g.parent.remove(g);
   wrap.add(g);
-  /* ★ THE line that was missing before: attach to the showroom
-     scene graph — without it the item never renders. */
+  /* ★ THE critical line: attach to the showroom scene graph */
   srRoot.add(wrap);
   wrap.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(g);
   const c = box.getCenter(new THREE.Vector3());
   const size = box.getSize(new THREE.Vector3());
-  g.position.set(-c.x, -c.y, -c.z);
-  const target = srTab === 'wpn' ? 2.6 : srTab === 'op' ? 2.8 : 3.5;
+  const target = srTab === 'wpn' ? 2.6 : srTab === 'op' ? 2.8 : 3.4;
   const s = target / Math.max(size.x, size.y, size.z, 0.001);
+  const halfH = (box.max.y - box.min.y) * 0.5 * s;
+  if (srTab === 'wpn') {
+    /* guns float centered inside the hologram */
+    g.position.set(-c.x, -c.y, -c.z);
+    wrap.userData.baseY = 1.7;
+    wrap.userData.cy = 1.7;
+  } else {
+    /* operators & arenas stand ON the pedestal (bottom-aligned) */
+    g.position.set(-c.x, -box.min.y + 0.34, -c.z);
+    wrap.userData.baseY = 0;
+    wrap.userData.cy = 0.34 + halfH;
+  }
   wrap.userData.s = s;
-  wrap.userData.baseY = srTab === 'arena' ? 2.0 : 1.7;
   wrap.scale.setScalar(s);
   wrap.position.y = wrap.userData.baseY;
-  wrap.rotation.x = srTab === 'wpn' ? 0.14 : 0;  /* museum tilt for guns */
   if (g.userData.orbiters) srOrbiters.push(...g.userData.orbiters);
   if (g.userData.wthr) srWthr.push(...g.userData.wthr);
   let col = 0x4ea8ff;
   if (srTab === 'op') col = OPERATORS[srIdx.op].color;
   else if (srTab === 'arena') col = ARENAS[ARENA_KEYS[srIdx.arena]].trim;
   srGlow.material.color.setHex(col);
-  srBuildDecor(col);
+  const R = srTab === 'arena' ? 2.6 : srTab === 'wpn' ? 1.35 : 1.6;
+  srBuildDecor(col, wrap.userData.cy, R);
+  /* camera aims slightly below item center → item sits above the card */
+  srLookY = Math.max(0.9, wrap.userData.cy - 0.35);
   srItem = wrap;
+}
+
+/* live summary — the anti-confusion line: always shows what DEPLOY launches */
+function srUpdateSummary() {
+  $('sr-summary').innerHTML =
+    '<b>' + MODES[modeIdx].chip + '</b> · <b>' + DIFFS[diffIdx].name + '</b> · <b>' +
+    OP.name + '</b> · <b>' + ARENAS[arenaKey].name + '</b>';
 }
 
 function srUpdateInfo() {
   const nameEl = $('sr-name'), subEl = $('sr-sub'), statsEl = $('sr-stats'),
-        descEl = $('sr-desc'), eqEl = $('sr-equip');
+        descEl = $('sr-desc'), actionEl = $('sr-action'), loadoutEl = $('sr-loadout');
   const bar = (l, v, t) => '<div class="sbar"><span class="sb-l">' + l + '</span><div class="sb-t"><div class="sb-f" style="width:' + (Math.min(1, Math.max(0.04, v)) * 100).toFixed(0) + '%"></div></div><span class="sb-v">' + t + '</span></div>';
   const badges = (f) => f.length ? '<div id="sr-badges">' + f.map(x => '<span class="sbadge">' + x + '</span>').join('') + '</div>' : '';
   let stats = '', desc = '';
+  actionEl.classList.remove('status', 'equipped');
   if (srTab === 'wpn') {
     const w = WEAPONS[srIdx.wpn];
     nameEl.textContent = w.name; subEl.textContent = w.sub;
@@ -2659,6 +2699,10 @@ function srUpdateInfo() {
       : w.rate < 0.1 ? 'A hose of lead. Builds streaks fast, forgives misses, burns ammo faster.'
       : w.resStart === Infinity ? 'The faithful sidearm. Never runs dry — always your last friend.'
       : 'Reliable workhorse.';
+    const slot = loadout.indexOf(srIdx.wpn);
+    if (slot >= 0) { actionEl.textContent = '✓ SLOT ' + (slot + 1) + ' — TAP TO REMOVE'; actionEl.classList.add('equipped'); }
+    else if (loadout.length < 3) actionEl.textContent = 'EQUIP → SLOT ' + (loadout.length + 1);
+    else actionEl.textContent = 'REPLACE SLOT 1 (' + WEAPONS[loadout[0]].name + ')';
   } else if (srTab === 'op') {
     const o = OPERATORS[srIdx.op];
     nameEl.textContent = o.name;
@@ -2672,33 +2716,28 @@ function srUpdateInfo() {
     if (o.odRate !== 1) f.push('OD ' + (o.odRate > 1 ? '+' : '') + Math.round((o.odRate - 1) * 100) + '%');
     stats += badges(f);
     desc = o.desc;
+    actionEl.textContent = '✓ SELECTED — DEPLOYING WITH THIS';
+    actionEl.classList.add('status');
   } else {
     const A = ARENAS[ARENA_KEYS[srIdx.arena]];
     nameEl.textContent = A.name;
     subEl.textContent = A.sub + ' · ' + A.part.toUpperCase();
     desc = A.desc;
+    actionEl.textContent = '✓ ACTIVE ARENA — DEPLOYING HERE';
+    actionEl.classList.add('status');
   }
   statsEl.innerHTML = stats;
   descEl.innerHTML = desc;
-  let label, on = false;
-  if (srTab === 'op') { on = opIdx === srIdx.op; label = on ? 'DEPLOYED OPERATOR' : 'SELECT OPERATOR'; }
-  else if (srTab === 'arena') { on = ARENA_KEYS[srIdx.arena] === arenaKey; label = on ? 'ACTIVE ARENA' : 'SET ARENA'; }
-  else {
-    const slot = loadout.indexOf(srIdx.wpn);
-    on = slot >= 0;
-    label = on ? 'SLOT ' + (slot + 1) + ' — TAP TO REMOVE' : (loadout.length < 3 ? 'ADD TO LOADOUT' : 'SWAP FOR SLOT 1');
-  }
-  eqEl.textContent = label;
-  eqEl.classList.toggle('equipped', on);
+  loadoutEl.innerHTML = 'LOADOUT ▸ ' + loadout.map((wi, i) => '<b>' + (i + 1) + ' ' + WEAPONS[wi].name + '</b>').join(' · ');
   document.querySelectorAll('.sr-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === srTab));
 }
 
 function srRefreshSide() {
-  const mc = MODES.map((m, i) => '<button class="schip' + (i === modeIdx ? ' on' : '') + '" data-k="mode" data-i="' + i + '">' + m.name + '</button>').join('');
+  const mc = MODES.map((m, i) => '<button class="schip' + (i === modeIdx ? ' on' : '') + '" data-k="mode" data-i="' + i + '">' + m.chip + '</button>').join('');
   const dc = DIFFS.map((d, i) => '<button class="schip' + (i === diffIdx ? ' on' : '') + '" data-k="diff" data-i="' + i + '">' + d.name + '</button>').join('');
   $('sr-modes').innerHTML = mc;
   $('sr-diffs').innerHTML = dc;
-  $('sr-best').innerHTML = 'BEST · ' + MODES[modeIdx].name + ' — <b>' + bestFor(MODES[modeIdx].key) + '</b>';
+  $('sr-best').innerHTML = 'BEST ' + MODES[modeIdx].chip + ' — <b>' + bestFor(MODES[modeIdx].key) + '</b>';
 }
 
 function srApplySafe() {
@@ -2714,9 +2753,14 @@ function srApplySafe() {
   }
 }
 function srApply() {
+  /* browsing = selecting: operator and arena apply instantly */
+  if (srTab === 'op') { opIdx = srIdx.op; OP = OPERATORS[opIdx]; }
+  else if (srTab === 'arena') { arenaKey = ARENA_KEYS[srIdx.arena]; }
+  saveSetup();
   srBuildItem();
   srUpdateInfo();
   srRefreshSide();
+  srUpdateSummary();
 }
 function srChange(dir) {
   const len = srTab === 'wpn' ? WEAPONS.length : srTab === 'op' ? OPERATORS.length : ARENA_KEYS.length;
@@ -2740,28 +2784,24 @@ function srCycleAngle() {
   SND.reloadClick(900);
 }
 function srEquip() {
-  try {
-    if (srTab === 'op') {
-      opIdx = srIdx.op; OP = OPERATORS[opIdx];
-      toast(OP.name + ' DEPLOYED');
-    } else if (srTab === 'arena') {
-      const k = ARENA_KEYS[srIdx.arena];
-      if (k !== arenaKey) { arenaKey = k; rebuildEnvironment(arenaKey); toast(ARENAS[k].name + ' SET'); }
-    } else {
-      const i = srIdx.wpn;
-      if (loadout.includes(i)) {
-        if (loadout.length > 1) loadout.splice(loadout.indexOf(i), 1);
-      } else if (loadout.length < 3) loadout.push(i);
-      else { loadout.shift(); loadout.push(i); }
-      toast(WEAPONS[i].name + (loadout.includes(i) ? ' EQUIPPED' : ' REMOVED'));
-    }
-    saveSetup();
-    SND.switch();
-    srUpdateInfo();
-  } catch (err) {
-    console.error('showroom equip:', err);
-    toast('SELECTION KEPT — RECOVERED');
+  if (srTab !== 'wpn') return; /* op/arena auto-apply — no action needed */
+  const i = srIdx.wpn;
+  if (loadout.includes(i)) {
+    if (loadout.length > 1) {
+      loadout.splice(loadout.indexOf(i), 1);
+      toast(WEAPONS[i].name + ' REMOVED');
+    } else toast('KEEP AT LEAST ONE WEAPON');
+  } else if (loadout.length < 3) {
+    loadout.push(i);
+    toast(WEAPONS[i].name + ' → SLOT ' + loadout.length);
+  } else {
+    loadout[0] = i;
+    toast(WEAPONS[i].name + ' → SLOT 1 (REPLACED ' + ')');
   }
+  saveSetup();
+  SND.switch();
+  srUpdateInfo();
+  srUpdateSummary();
 }
 function enterShowroom() {
   initShowroom();
@@ -2779,8 +2819,10 @@ function enterShowroom() {
   showroomEl.classList.add('on');
   $('sr-help').classList.add('off');
   $('sr-install').classList.toggle('show', !!installPrompt);
+  $('sr-draghint').classList.remove('fade');
+  setTimeout(() => $('sr-draghint').classList.add('fade'), 6000);
   srApplySafe();
-  toast('DRAG TO ORBIT · ARROWS TO BROWSE · DEPLOY TO FIGHT');
+  toast('BROWSE TO SELECT · DEPLOY TO FIGHT');
 }
 function closeShowroom() {
   showroomEl.classList.remove('on');
@@ -2792,7 +2834,7 @@ function closeShowroom() {
   let drag = null;
   showroomEl.addEventListener('pointerdown', (e) => {
     try {
-      if (e.target.closest && e.target.closest('button')) return;
+      if (e.target.closest && e.target.closest('button, #sr-info, #sr-tabs, #sr-config, #sr-top, #sr-help, #sr-tools')) return;
       drag = { x: e.clientX, y: e.clientY, id: e.pointerId };
       srDragOn = true;
       try { showroomEl.setPointerCapture(e.pointerId); } catch (err) {}
@@ -2842,8 +2884,9 @@ function updateShowroomInner(dt) {
   const e = 1 - Math.pow(1 - srSlide.t, 3);
   if (srItem) {
     const s = (srItem.userData && srItem.userData.s) || 1;
+    const baseY = (srItem.userData && srItem.userData.baseY) || 0;
     srItem.position.x = srSlide.dir * 2.8 * (1 - e);
-    srItem.position.y = ((srItem.userData && srItem.userData.baseY) || 1.7) + Math.sin(srTime * 1.3) * 0.07 * e;
+    srItem.position.y = baseY + Math.sin(srTime * 1.3) * 0.07 * e;
     srItem.scale.setScalar(s * (0.9 + 0.1 * e));
     srItem.rotation.y += dt * (srTab === 'arena' ? 0.22 : 0.5);
   }
@@ -2863,11 +2906,10 @@ function updateShowroomInner(dt) {
     }
     w.geo.attributes.position.needsUpdate = true;
   }
-  /* hologram decor animation */
   const pulse = 0.5 + 0.5 * Math.sin(srTime * 2.2);
   for (const d of srDecor) {
     if (d.kind === 'scan') {
-      d.mesh.position.y = 1.9 + Math.sin(srTime * 0.9) * 0.5;
+      d.mesh.position.y = d.cy + Math.sin(srTime * 0.9) * 0.55;
       d.mesh.material.opacity = 0.3 + 0.3 * pulse;
     } else if (d.kind === 'spinRev') {
       d.mesh.rotation.y += (d.s || 0.7) * dt;
@@ -2886,19 +2928,19 @@ function updateShowroomInner(dt) {
   const sp = Math.sin(srOrbit.phi), cp = Math.cos(srOrbit.phi);
   srCam.position.set(
     Math.sin(srOrbit.theta) * sp * srOrbit.r,
-    1.5 + cp * srOrbit.r,
+    srLookY + cp * srOrbit.r,
     Math.cos(srOrbit.theta) * sp * srOrbit.r
   );
-  srCam.lookAt(0, 1.5, 0);
+  srCam.lookAt(0, srLookY, 0);
 }
 
  $('sr-prev').addEventListener('click', () => srChange(-1));
  $('sr-next').addEventListener('click', () => srChange(1));
  $('sr-angle').addEventListener('click', () => srCycleAngle());
- $('sr-equip').addEventListener('click', () => srEquip());
+ $('sr-action').addEventListener('click', () => srEquip());
  $('sr-deploy').addEventListener('click', () => { SND.resume(); saveSetup(); tryLock(); });
 document.querySelectorAll('.sr-tab').forEach(b => b.addEventListener('click', () => srSetTab(b.dataset.tab)));
- $('sr-side').addEventListener('click', (e) => {
+ $('sr-config').addEventListener('click', (e) => {
   const c = e.target.closest('.schip');
   if (!c) return;
   SND.resume();
@@ -2906,13 +2948,18 @@ document.querySelectorAll('.sr-tab').forEach(b => b.addEventListener('click', ()
   else { diffIdx = +c.dataset.i; DIFF = DIFFS[diffIdx]; }
   saveSetup();
   srRefreshSide();
+  srUpdateSummary();
   SND.switch();
 });
  $('sr-help-btn').addEventListener('click', () => {
   const h = $('sr-help');
   const off = h.classList.toggle('off');
-  if (!off) h.innerHTML = '<h3>Controls & Best Runs</h3>' +
+  if (!off) h.innerHTML = '<h3>How to play</h3>' +
     '<div class="dedic">made by <b>Gaurav</b> · for <b>Bigyan</b></div>' +
+    '<div class="setup">DEPLOYING: ' + MODES[modeIdx].chip + ' · ' + DIFFS[diffIdx].name + ' · ' + OP.name + ' · ' + ARENAS[arenaKey].name + '</div>' +
+    '<div style="font-size:10px;color:var(--dim);line-height:1.6;margin-bottom:10px">' +
+    'Browse with ‹ › to SELECT an operator or arena — it applies instantly. Weapons need the EQUIP button (pick 3). ' +
+    'Set TIME and DIFFICULTY with the chips above. Drag the 3D to orbit.</div>' +
     controlsHTML() + boardHTML();
 });
  $('sr-install').addEventListener('click', () => {
@@ -4124,13 +4171,6 @@ if (IS_TOUCH) {
 }
 if (window.__ER_OFFLINE__) setTimeout(() => toast('OFFLINE — ENGINE FROM LOCAL CACHE'), 900);
 animate();
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('sw.js').catch(function () {});
-  });
-}
 </script>
 </body>
 </html>
